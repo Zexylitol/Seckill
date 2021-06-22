@@ -42,3 +42,7 @@
 创建商品：
 
 <center><img src="https://ss.im5i.com/2021/06/22/SGeSn.png" alt="SGeSn.png" border="0" /></center>
+
+## 架构图
+
+<center><img src="https://ss.im5i.com/2021/06/23/SyFr7.png" alt="SyFr7.png" border="0" /></center>
