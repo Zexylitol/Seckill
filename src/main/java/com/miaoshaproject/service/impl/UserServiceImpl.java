@@ -76,7 +76,8 @@ public class UserServiceImpl implements UserService {
         }
 
 
-        userModel.setId(userDO.getId());
+        UserDO userDO1 = userDOMapper.selectByTelphone(userDO.getTelphone());
+        userModel.setId(userDO1.getId());
         UserPasswordDO userPasswordDO=convertPasswordFromModel(userModel);
 
         userPasswordDOMapper.insertSelective(userPasswordDO);
