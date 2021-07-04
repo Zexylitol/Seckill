@@ -252,17 +252,19 @@ mv ./static resources/
 
   1. 引入redis依赖
 
-  ```xml
-  <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-redis</artifactId>
-  </dependency>
-  <dependency>
-      <groupId>org.springframework.session</groupId>
-      <artifactId>spring-session-data-redis</artifactId>
-      <version>2.0.5.RELEASE</version>
-  </dependency>
-  ```
+     ```xml
+     <dependency>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-starter-data-redis</artifactId>
+     </dependency>
+     <dependency>
+         <groupId>org.springframework.session</groupId>
+         <artifactId>spring-session-data-redis</artifactId>
+         <version>2.0.5.RELEASE</version>
+     </dependency>
+     ```
+
+     
 
   2. 下载redis
 
@@ -295,17 +297,19 @@ mv ./static resources/
 
   3. 配置stringboot对redis的依赖以及设置jedis连接池
 
-  ```xml
-  # 配置springboot对redis的依赖
-  spring.redis.host=127.0.0.1
-  spring.redis.port=6379
-  spring.redis.database=10
-  # spring.redis.password=
-  
-  # 设置jedis连接池
-  spring.redis.jedis.pool.max-active=50
-  spring.redis.jedis.pool.min-idle=20
-  ```
+     ```xml
+     # 配置springboot对redis的依赖
+     spring.redis.host=127.0.0.1
+     spring.redis.port=6379
+     spring.redis.database=10
+     # spring.redis.password=
+     
+     # 设置jedis连接池
+     spring.redis.jedis.pool.max-active=50
+     spring.redis.jedis.pool.min-idle=20
+     ```
+
+     
 
   4. `UserModel`实现`Serializable`接口
 
@@ -370,6 +374,28 @@ chmod -R 777 miaosha-1.0-SNAPSHOT.jar
 # 后台启动
 ./deploy.sh &
 ```
+
+# 2. Jmeter性能压测
+
+| Thread Properties        |      |
+| :----------------------- | :--- |
+| Number of Threads(users) | 1000 |
+| Ramp-up period(seconds)  | 10   |
+| LoopCount                | 100  |
+
+| HTTP Request      |                |
+| :---------------- | -------------- |
+| Protocol[http]    | http           |
+| Server Name or IP | 192.168.65.130 |
+| Port Number       | 8090           |
+| Method            | GET            |
+| Path              | /item/get?id=1 |
+
+| Aggregate Report |           |         |        |      |      |      |      |       |        |            |                 |             |
+| :--------------: | :-------: | :-----: | :----: | :--: | :--: | :--: | :--: | :---: | :----: | :--------: | :-------------: | :---------: |
+|      Label       | # Samples | Average | Median | TP90 | TP95 | TP99 | Min  |  Max  | Error% | Throughput | Received KB/sec | Sent KB/sec |
+|   HTTP Request   |  100000   |   582   |  182   | 1629 | 2411 | 4266 |  1   | 14269 |  0.0   | 1443.8/sec |     510.42      |     0.0     |
+|      TOTAL       |  100000   |   582   |  182   | 1629 | 2411 | 4266 |  1   | 14269 |  0.0   | 1443.8/sec |     510.42      |     0.0     |
 
 
 
