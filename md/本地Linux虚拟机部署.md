@@ -56,5 +56,28 @@ nohup java -Xms2048m -Xmx2048m -XX:NewSize=1024m -XX:MaxNewSize=1024m -jar miaos
 deploy.sh &
 ```
 
+# 4. 部署后测试
+
+访问`http://192.168.65.130:8090/item/get?id=1`，输出：
+
+```json
+{
+status: "success",
+    data: {
+        id: 1,
+        title: "iphone20",
+        price: 100,
+        stock: 94,
+        description: "苹果手机",
+        sales: 5,
+        imgUrl: "https://ss.im5i.com/2021/06/22/SGWdd.png",
+        promoStatus: 0,
+        promoPrice: null,
+        promoId: null,
+        startTime: null
+    }
+}
+```
+
 
 
