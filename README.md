@@ -46,3 +46,12 @@
 ## 架构图
 
 <center><img src="https://ss.im5i.com/2021/06/23/SyFr7.png" alt="SyFr7.png" border="0" /></center>
+
+## 本地Linux虚拟机部署
+
+- [本地Linux虚拟机部署](md/本地Linux虚拟机部署.md)
+
+## 性能优化
+
+- [容量问题优化](md/容量问题优化.md)
+- [分布式：nginx反向代理与分布式会话管理](md/分布式：nginx反向代理与分布式会话管理.md)
