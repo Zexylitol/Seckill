@@ -3,6 +3,7 @@ package com.miaoshaproject.service.model;
 import lombok.Data;
 import org.joda.time.DateTime;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -10,7 +11,7 @@ import java.math.BigDecimal;
  * @create 2021-06-14 18:44
  */
 @Data
-public class PromoModel {
+public class PromoModel implements Serializable {
     /**
      * 主键id
      */
