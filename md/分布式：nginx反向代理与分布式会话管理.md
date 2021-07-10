@@ -116,6 +116,17 @@ mv ./static resources/
 ../sbin/nginx -s reload
 ```
 
+| 页面     | 访问路径                                        |
+| :------- | :---------------------------------------------- |
+| 获取OTP  | http://192.168.65.130/resources/getotp.html     |
+| 注册     | http://192.168.65.130/resources/register.html   |
+| 登录     | http://192.168.65.130/resources/login.html      |
+| 商品浏览 | http://192.168.65.130/resources/listitem.html   |
+| 下单     | http://192.168.65.130/resources/getitem.html    |
+| 创建商品 | http://192.168.65.130/resources/createitem.html |
+
+
+
 ### 1.2.5 配置nginx反向代理
 
 - nginx动静分离服务器
