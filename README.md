@@ -47,6 +47,18 @@
 
 <center><img src="https://ss.im5i.com/2021/06/23/SyFr7.png" alt="SyFr7.png" border="0" /></center>
 
+## 启动说明
+
+前提：部署至本地Linux虚拟机，并部署Nginx OpenResty
+
+| 启动             | 说明                                                         |
+| :--------------- | :----------------------------------------------------------- |
+| 启动redis-server |                                                              |
+| 启动nginx        | cd /usr/local/openresty/nginx<br/>sbin/nginx -c conf/nginx.conf |
+| 启动程序         | cd /var/www/miaosha<br/>./deploy.sh &                        |
+
+
+
 ## 本地Linux虚拟机部署
 
 - [本地Linux虚拟机部署](md/本地Linux虚拟机部署.md)
