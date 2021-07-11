@@ -45,11 +45,13 @@ public class OrderServiceImpl implements OrderService {
     @Transactional       // 保证创建订单是在同一个事务当中
     public OrderModel createOrder(Integer userId, Integer itemId, Integer promoId, Integer amount) throws BusinessException {
         //1. 校验下单状态，下单的商品是否存在，下单的用户是否合法，购买数量是否正确
-        ItemModel itemModel=itemService.getItemById(itemId);
+        //ItemModel itemModel = itemService.getItemById(itemId);
+        ItemModel itemModel = itemService.getItemByIdInCache(itemId);
         if(Objects.isNull(itemModel)) {
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"商品信息不存在");
         }
-        UserModel userModel=userService.getUserById(userId);
+        //UserModel userModel=userService.getUserById(userId);
+        UserModel userModel = userService.getUserByIdInCache(userId);
         if(Objects.isNull(userModel)) {
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"用户信息不存在");
         }

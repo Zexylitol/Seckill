@@ -14,10 +14,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author yzze
@@ -35,6 +37,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private ValidatorImpl validator;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     public UserModel getUserById(Integer id) {
@@ -105,6 +110,17 @@ public class UserServiceImpl implements UserService {
         //比对用户信息内加密密码是否和加密进来的密码相匹配
         if(!StringUtils.equals(encrptPassword, userModel.getEncrptPassword())){
             throw new BusinessException(EmBusinessError.USER_LOGIN_FAIL);
+        }
+        return userModel;
+    }
+
+    @Override
+    public UserModel getUserByIdInCache(Integer id) {
+        UserModel userModel = (UserModel) redisTemplate.opsForValue().get("user_validate_" + id);
+        if (Objects.isNull(userModel)) {
+            userModel = this.getUserById(id);
+            redisTemplate.opsForValue().set("user_validate_" + id, userModel);
+            redisTemplate.expire("user_validate_" + id, 10, TimeUnit.MINUTES);
         }
         return userModel;
     }

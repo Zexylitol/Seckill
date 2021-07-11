@@ -32,6 +32,8 @@ CREATE TABLE `item_stock` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+ALTER TABLE `item_stock` ADD UNIQUE INDEX uk_item_id(`item_id`);
+
 /*Data for the table `item_stock` */
 
 insert  into `item_stock`(`id`,`stock`,`item_id`) values (2,98,2),(6,99,6);
