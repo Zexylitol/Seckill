@@ -79,3 +79,5 @@ logs/
 
 document.html
 swagger.json
+
+*.bak
