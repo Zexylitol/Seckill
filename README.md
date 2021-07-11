@@ -56,8 +56,7 @@
 | 启动redis-server |                                                              |
 | 启动nginx        | cd /usr/local/openresty/nginx<br/>sbin/nginx -c conf/nginx.conf |
 | 启动程序         | cd /var/www/miaosha<br/>./deploy.sh &                        |
-
-
+| 启动RocketMQ     | #Start Name Server<br/>nohup sh bin/mqnamesrv &<br/>#Start Broker<br/>nohup sh bin/mqbroker -n localhost:9876 &<br/>#创建topic<br/>./bin/mqadmin updateTopic -n localhost:9876 -t stock -c DefaultCluster |
 
 ## 本地Linux虚拟机部署
 
