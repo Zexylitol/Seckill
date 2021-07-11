@@ -17,6 +17,7 @@ import sun.misc.BASE64Encoder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -139,8 +140,7 @@ public class UserController extends BaseController {
         MessageDigest md5=MessageDigest.getInstance("MD5");
         BASE64Encoder base64Encoder=new BASE64Encoder();
         //加密字符串
-        String pwd= base64Encoder.encode(md5.digest(str.getBytes("UTF-8")));
-        return pwd;
+        return base64Encoder.encode(md5.digest(str.getBytes(StandardCharsets.UTF_8)));
     }
 
     /**

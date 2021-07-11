@@ -63,7 +63,7 @@ public class OrderServiceImpl implements OrderService {
             if(promoId.intValue() != itemModel.getPromoModel().getId()) {
                 throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"活动信息不正确");
                 //校验活动是否正在进行中
-            } else if(itemModel.getPromoModel().getStatus().intValue() != 2) {
+            } else if(itemModel.getPromoModel().getStatus() != 2) {
                 throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"活动还未开始");
             }
         }

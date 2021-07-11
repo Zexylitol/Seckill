@@ -134,8 +134,7 @@ public class ItemController extends BaseController {
 
         //使用stream将list内的itemModle转发为itemVO
         List<ItemVO> itemVOList = itemModelList.stream().map(itemModel -> {
-            ItemVO itemVO = convertVOFromModel(itemModel);
-            return itemVO;
+            return convertVOFromModel(itemModel);
         }).collect(Collectors.toList());
         return CommonReturnType.create(itemVOList);
     }

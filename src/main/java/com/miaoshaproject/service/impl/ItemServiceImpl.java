@@ -107,7 +107,7 @@ public class ItemServiceImpl implements ItemService {
 
         //获取活动商品信息
         PromoModel promoModel = promoService.getPromoByItemId(itemModel.getId());
-        if(!Objects.isNull(promoModel) && promoModel.getStatus().intValue() != 3){
+        if(!Objects.isNull(promoModel) && promoModel.getStatus() != 3){
             itemModel.setPromoModel(promoModel);
         }
         return itemModel;
@@ -135,7 +135,7 @@ public class ItemServiceImpl implements ItemService {
     private ItemModel convertModelFromDataObject(ItemDO itemDO,ItemStockDO itemStockDO){
         ItemModel itemModel = new ItemModel();
         BeanUtils.copyProperties(itemDO, itemModel);
-        itemModel.setPrice(new BigDecimal(itemDO.getPrice()));
+        itemModel.setPrice(BigDecimal.valueOf(itemDO.getPrice()));
         itemModel.setStock(itemStockDO.getStock());
 
         return itemModel;
