@@ -2,7 +2,9 @@ package com.miaoshaproject.controller;
 
 import com.miaoshaproject.error.BusinessException;
 import com.miaoshaproject.error.EmBusinessError;
+import com.miaoshaproject.mq.MqProducer;
 import com.miaoshaproject.response.CommonReturnType;
+import com.miaoshaproject.service.ItemService;
 import com.miaoshaproject.service.OrderService;
 import com.miaoshaproject.service.model.OrderModel;
 import com.miaoshaproject.service.model.UserModel;
@@ -31,6 +33,12 @@ public class OrderController extends BaseController{
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private MqProducer mqProducer;
+
+    @Autowired
+    private ItemService itemService;
 
     /**
      * 封装下单请求
@@ -63,8 +71,23 @@ public class OrderController extends BaseController{
         if (Objects.isNull(userModel)) {
             throw new BusinessException(EmBusinessError.USER_NOT_LOGIN,"用户未登录,不能下单");
         }
-        OrderModel orderModel = orderService.createOrder(userModel.getId(), itemId, promoId, amount);
 
+        // 判断库存是否已售罄
+        Boolean hasKey = redisTemplate.hasKey("promo_item_stock_invalid_" + itemId);
+        if (hasKey) {
+            // 返回下单失败
+            throw new BusinessException(EmBusinessError.STOCK_NOT_ENOUGH);
+        }
+
+        // 加入库存流水init状态
+        String stockLogId = itemService.initStockLog(itemId, amount);
+
+        // 再去完成对应的下单事务型消息机制
+        //OrderModel orderModel = orderService.createOrder(userModel.getId(), itemId, promoId, amount);
+        // 开启异步发送事务型消息
+        if (!mqProducer.transactionAsyncReduceStock(userModel.getId(), itemId, promoId, amount, stockLogId)) {
+            throw new BusinessException(EmBusinessError.UNKNOWN_ERROR, "下单失败");
+        }
         return CommonReturnType.create(null);
     }
 }

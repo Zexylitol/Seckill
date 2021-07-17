@@ -2,8 +2,10 @@ package com.miaoshaproject.service.impl;
 
 import com.miaoshaproject.dao.OrderDOMapper;
 import com.miaoshaproject.dao.SequenceDOMapper;
+import com.miaoshaproject.dao.StockLogDOMapper;
 import com.miaoshaproject.dataobject.OrderDO;
 import com.miaoshaproject.dataobject.SequenceDO;
+import com.miaoshaproject.dataobject.StockLogDO;
 import com.miaoshaproject.error.BusinessException;
 import com.miaoshaproject.error.EmBusinessError;
 import com.miaoshaproject.service.ItemService;
@@ -41,9 +43,12 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private SequenceDOMapper sequenceDOMapper;
 
+    @Autowired
+    private StockLogDOMapper stockLogDOMapper;
+
     @Override
     @Transactional       // 保证创建订单是在同一个事务当中
-    public OrderModel createOrder(Integer userId, Integer itemId, Integer promoId, Integer amount) throws BusinessException {
+    public OrderModel createOrder(Integer userId, Integer itemId, Integer promoId, Integer amount, String stockLogId) throws BusinessException {
         //1. 校验下单状态，下单的商品是否存在，下单的用户是否合法，购买数量是否正确
         //ItemModel itemModel = itemService.getItemById(itemId);
         ItemModel itemModel = itemService.getItemByIdInCache(itemId);
@@ -99,6 +104,29 @@ public class OrderServiceImpl implements OrderService {
 
         //加上商品的销量
         itemService.increaseSales(itemId, amount);
+
+        // 设置库存流水状态为成功
+        StockLogDO stockLogDO = stockLogDOMapper.selectByPrimaryKey(stockLogId);
+        if (Objects.isNull(stockLogDO)) {
+            throw new BusinessException(EmBusinessError.UNKNOWN_ERROR);
+        }
+        stockLogDO.setStatus(2);
+        stockLogDOMapper.updateByPrimaryKeySelective(stockLogDO);
+
+//        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+//            // 此方法会在最近的一个@Transactional注解成功commit之后执行
+//            @Override
+//            public void afterCommit() {
+//                // 事务提交之后，异步更新库存
+//                boolean mqResult = itemService.asyncDecreaseStock(itemId, amount);
+////                if (!mqResult) {
+////                    itemService.increaseStock(itemId, amount);
+////                    // 异步更新库存失败，事务回滚
+////                    throw new BusinessException(EmBusinessError.MQ_SEND_FAIL);
+////                }
+//            }
+//        });
+
         //4. 返回前端
         return orderModel;
     }

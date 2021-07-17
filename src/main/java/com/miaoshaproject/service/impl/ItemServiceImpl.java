@@ -2,8 +2,10 @@ package com.miaoshaproject.service.impl;
 
 import com.miaoshaproject.dao.ItemDOMapper;
 import com.miaoshaproject.dao.ItemStockDOMapper;
+import com.miaoshaproject.dao.StockLogDOMapper;
 import com.miaoshaproject.dataobject.ItemDO;
 import com.miaoshaproject.dataobject.ItemStockDO;
+import com.miaoshaproject.dataobject.StockLogDO;
 import com.miaoshaproject.error.BusinessException;
 import com.miaoshaproject.error.EmBusinessError;
 import com.miaoshaproject.mq.MqProducer;
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -48,6 +51,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private StockLogDOMapper stockLogDOMapper;
 
     @Override
     @Transactional
@@ -128,17 +134,21 @@ public class ItemServiceImpl implements ItemService {
         //int affactedRow = itemStockDOMapper.decreaseStock(itemId, amount);  //影响的条目数
         Long result = redisTemplate.opsForValue().increment("promo_item_stock_" + itemId, amount * -1);
 //        if(affactedRow > 0) {
-        if (result >= 0) {
+        if (result > 0) {
             // 更新库存成功
-            boolean sendResult = producer.asyncReduceStock(itemId, amount);
-            if (!sendResult) {
-                redisTemplate.opsForValue().increment("promo_item_stock_" + itemId, amount);
-                return false;
-            }
+//            boolean sendResult = producer.asyncReduceStock(itemId, amount);
+//            if (!sendResult) {
+//                redisTemplate.opsForValue().increment("promo_item_stock_" + itemId, amount);
+//                return false;
+//            }
+            return true;
+        } else if(result == 0) {
+            // 打上库存已售罄的标识
+            redisTemplate.opsForValue().set("promo_item_stock_invalid_" + itemId, "true");
             return true;
         } else {
             // 更新库存失败
-            redisTemplate.opsForValue().increment("promo_item_stock_" + itemId, amount);
+            increaseStock(itemId, amount);
             return false;
         }
     }
@@ -167,5 +177,30 @@ public class ItemServiceImpl implements ItemService {
         itemModel.setStock(itemStockDO.getStock());
 
         return itemModel;
+    }
+
+    @Override
+    public boolean asyncDecreaseStock(Integer itemId, Integer amount) {
+        return producer.asyncReduceStock(itemId, amount);
+    }
+
+    @Override
+    public boolean increaseStock(Integer itemId, Integer amount) {
+        redisTemplate.opsForValue().increment("promo_item_stock_" + itemId, amount);
+        return true;
+    }
+
+    @Override
+    @Transactional
+    public String initStockLog(Integer itemId, Integer amount) {
+        StockLogDO stockLogDO = new StockLogDO();
+        stockLogDO.setItemId(itemId);
+        stockLogDO.setAmount(amount);
+        stockLogDO.setStockLogId(UUID.randomUUID().toString().replace("-", ""));
+        stockLogDO.setStatus(1);
+
+        stockLogDOMapper.insertSelective(stockLogDO);
+
+        return stockLogDO.getStockLogId();
     }
 }
