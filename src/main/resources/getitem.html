@@ -50,19 +50,27 @@
     <div class="form-group">
         <label class="control-label">库存</label>
         <div>
-            <label class="control-label" id="stock"/>
+            <label class="control-label" id="stock"></label>
         </div>
     </div>
     <div class="form-group">
         <label class="control-label">销量</label>
         <div>
-            <label class="control-label" id="sales"/>
+            <label class="control-label" id="sales"></label>
         </div>
     </div>
 
     <div class="form-actions">
         <button class="btn blue" id="createorder" type="submit">
             下单
+        </button>
+    </div>
+
+    <div id="verifyDiv" style="display:none" class="form-actions">
+        <img src=""/>
+        <input type="text" id="verifyContent" value=""/>
+        <button class="btn blue" id="verifyButton" type="submit">
+            验证
         </button>
     </div>
 
@@ -73,11 +81,11 @@
 
     function getParam(paramName) {
         paramValue = "", isFound = !1;
-        if (this.location.search.indexOf("?") == 0 && this.location.search.indexOf("=") > 1) {
+        if (this.location.search.indexOf("?") === 0 && this.location.search.indexOf("=") > 1) {
             arrSource = unescape(this.location.search).substring(1, this.location.search.length).split("&"), i = 0;
             while (i < arrSource.length && !isFound) arrSource[i].indexOf("=") > 0 && arrSource[i].split("=")[0].toLowerCase() == paramName.toLowerCase() && (paramValue = arrSource[i].split("=")[1], isFound = !0), i++
         }
-        return paramValue == "" && (paramValue = null),paramValue
+        return paramValue === "" && (paramValue = null),paramValue
     }
     var g_itemVO={};
     jQuery(document).ready(function () {
@@ -92,7 +100,7 @@
                 withCredentials:true
             },
             success:function (data) {
-                if(data.status=="success") {
+                if(data.status==="success") {
                     g_itemVO = data.data;
                     reloadDom();
                     setInterval(reloadDom,1000);
@@ -105,28 +113,22 @@
             }
         });
 
-        //下单请求
-        $("#createorder").on("click",function () {
+        $("#verifyButton").on("click", function () {
             var token = window.localStorage["token"];
-            if (token == null) {
-                alert("没有登录，不能下单！");
-                window.location.href="login.html";
-                return false;
-            }
-
             $.ajax({
                 type: "POST",
                 contentType: "application/x-www-form-urlencoded",
                 url: "http://"+ g_host +"/order/generatetoken?token="+token,
                 data: {
                     "itemId": g_itemVO.id,
-                    "promoId":g_itemVO.promoId
+                    "promoId":g_itemVO.promoId,
+                    "verifyCode": $("#verifyContent").val()
                 },
                 xhrFields: {
                     withCredentials: true
                 },
                 success: function (data) {
-                    if (data.status == "success") {
+                    if (data.status === "success") {
                         var secKillToken = data.data;
                         $.ajax({
                             type: "POST",
@@ -142,12 +144,12 @@
                                 withCredentials: true
                             },
                             success: function (data) {
-                                if (data.status == "success") {
+                                if (data.status === "success") {
                                     alert("下单成功");
                                     window.location.reload();
                                 } else {
                                     alert("下单失败，原因为" + data.data.errMsg);
-                                    if (data.data.errCode == 20003) {
+                                    if (data.data.errCode === 20003) {
                                         window.location.href ="login.html";
                                     }
                                 }
@@ -158,15 +160,30 @@
                         });
                     } else {
                         alert("获取令牌失败，原因为" + data.data.errMsg);
+                        if (data.data.errCode === 20003) {
+                            window.location.href ="login.html";
+                        }
                     }
                 },
                 error: function (data) {
                     alert("获取令牌失败，原因为" + data.responseText);
-                    if (data.data.errCode == 20003) {
-                        window.location.href ="login.html";
-                    }
                 }
             });
+        });
+
+        //下单请求
+        $("#createorder").on("click",function () {
+            var token = window.localStorage["token"];
+            if (token == null) {
+                alert("没有登录，不能下单！");
+                window.location.href="login.html";
+                return false;
+            }
+
+            $("#verifyDiv img").attr("src", "http://"+ g_host +"/order/generateverifycode?token=" + token);
+            $("#verifyDiv").show();
+
+
         });
 
     });
@@ -177,7 +194,7 @@
         $("#price").text(g_itemVO.price);
         $("#imgUrl").attr("src",g_itemVO.imgUrl);
         $("#sales").text(g_itemVO.sales);
-        if(g_itemVO.promoStatus == 1){
+        if(g_itemVO.promoStatus === 1){
             //秒杀活动还未开始
             var startTimes = g_itemVO.startTime.replace(new RegExp("-","gm"),"/");
             startTimes = (new Date(startTimes)).getTime();
@@ -193,7 +210,7 @@
             $("#promoStartTime").text("秒杀活动将于: " + g_itemVO.startTime + "开始! 倒计时:" + delta + "秒");
             $("#promoPrice").text(g_itemVO.promoPrice);
             $("#createorder").attr("disabled",true);
-        }else if(g_itemVO.promoStatus == 2) {
+        }else if(g_itemVO.promoStatus === 2) {
             //秒杀活动进行中
             $("#promoStartTime").text("秒杀活动正在进行中");
             $("#promoPrice").text(g_itemVO.promoPrice);
