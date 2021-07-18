@@ -92,9 +92,9 @@ public class MqProducer {
                 if (Objects.isNull(stockLogDO)) {
                     return LocalTransactionState.UNKNOW;
                 }
-                if (stockLogDO.getStatus().intValue() == 2) {
+                if (stockLogDO.getStatus() == 2) {
                     return LocalTransactionState.COMMIT_MESSAGE;
-                } else if (stockLogDO.getStatus().intValue() == 1) {
+                } else if (stockLogDO.getStatus() == 1) {
                     return LocalTransactionState.UNKNOW;
                 }
                 return LocalTransactionState.ROLLBACK_MESSAGE;

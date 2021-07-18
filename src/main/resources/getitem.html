@@ -113,13 +113,13 @@
                 window.location.href="login.html";
                 return false;
             }
+
             $.ajax({
                 type: "POST",
                 contentType: "application/x-www-form-urlencoded",
-                url: "http://"+ g_host +"/order/createorder?token="+token,
+                url: "http://"+ g_host +"/order/generatetoken?token="+token,
                 data: {
                     "itemId": g_itemVO.id,
-                    "amount": 1,
                     "promoId":g_itemVO.promoId
                 },
                 xhrFields: {
@@ -127,17 +127,44 @@
                 },
                 success: function (data) {
                     if (data.status == "success") {
-                        alert("下单成功");
-                        window.location.reload();
+                        var secKillToken = data.data;
+                        $.ajax({
+                            type: "POST",
+                            contentType: "application/x-www-form-urlencoded",
+                            url: "http://"+ g_host +"/order/createorder?token="+token,
+                            data: {
+                                "itemId": g_itemVO.id,
+                                "amount": 1,
+                                "promoId": g_itemVO.promoId,
+                                "promoToken": secKillToken
+                            },
+                            xhrFields: {
+                                withCredentials: true
+                            },
+                            success: function (data) {
+                                if (data.status == "success") {
+                                    alert("下单成功");
+                                    window.location.reload();
+                                } else {
+                                    alert("下单失败，原因为" + data.data.errMsg);
+                                    if (data.data.errCode == 20003) {
+                                        window.location.href ="login.html";
+                                    }
+                                }
+                            },
+                            error: function (data) {
+                                alert("下单失败，原因为" + data.responseText);
+                            }
+                        });
                     } else {
-                        alert("下单失败，原因为" + data.data.errMsg);
-                        if (data.data.errCode == 20003) {
-                            window.location.href ="login.html";
-                        }
+                        alert("获取令牌失败，原因为" + data.data.errMsg);
                     }
                 },
                 error: function (data) {
-                    alert("下单失败，原因为" + data.responseText);
+                    alert("获取令牌失败，原因为" + data.responseText);
+                    if (data.data.errCode == 20003) {
+                        window.location.href ="login.html";
+                    }
                 }
             });
         });
