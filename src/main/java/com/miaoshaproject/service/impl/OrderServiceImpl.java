@@ -113,12 +113,14 @@ public class OrderServiceImpl implements OrderService {
         stockLogDO.setStatus(2);
         stockLogDOMapper.updateByPrimaryKeySelective(stockLogDO);
 
+        // 消息发送成功，若commit失败还是会导致库存被白白扣掉
 //        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 //            // 此方法会在最近的一个@Transactional注解成功commit之后执行
 //            @Override
 //            public void afterCommit() {
 //                // 事务提交之后，异步更新库存
 //                boolean mqResult = itemService.asyncDecreaseStock(itemId, amount);
+                    // 消息不能发送失败
 ////                if (!mqResult) {
 ////                    itemService.increaseStock(itemId, amount);
 ////                    // 异步更新库存失败，事务回滚
