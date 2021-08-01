@@ -47,6 +47,10 @@
 
 <center><img src="https://ss.im5i.com/2021/06/23/SyFr7.png" alt="SyFr7.png" border="0" /></center>
 
+<center><img src="https://ss.im5i.com/2021/08/01/GmJBS.png" alt="GmJBS.png" border="0" /></center>
+
+<center><img src="https://ss.im5i.com/2021/08/01/GmBQj.png" alt="GmBQj.png" border="0" /></center>
+
 ## 启动说明
 
 前提：部署至本地Linux虚拟机，并部署Nginx OpenResty
