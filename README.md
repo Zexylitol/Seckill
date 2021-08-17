@@ -51,6 +51,10 @@
 
 <center><img src="https://ss.im5i.com/2021/08/01/GmBQj.png" alt="GmBQj.png" border="0" /></center>
 
+## 下单流程
+
+<center><img src="https://ss.im5i.com/2021/08/17/VHb8t.jpg" alt="VHb8t.jpg" border="0" /></center>
+
 ## 启动说明
 
 前提：部署至本地Linux虚拟机，并部署Nginx OpenResty
